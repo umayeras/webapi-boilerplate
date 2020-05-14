@@ -2,7 +2,7 @@ using WebApp.Model;
 
 namespace WebApp.Data.Abstract
 {
-    public interface IContactRepository :IBaseRepository<Sample>
+    public interface ISampleRepository :IBaseRepository<Sample>
     {
         
     }

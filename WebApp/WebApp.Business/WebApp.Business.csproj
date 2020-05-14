@@ -4,4 +4,9 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\WebApp.Data\WebApp.Data.csproj" />
+      <ProjectReference Include="..\WebApp.Model\WebApp.Model.csproj" />
+    </ItemGroup>
+
 </Project>
