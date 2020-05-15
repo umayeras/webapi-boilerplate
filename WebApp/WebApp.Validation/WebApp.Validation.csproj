@@ -4,4 +4,12 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="8.6.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WebApp.Model\WebApp.Model.csproj" />
+    </ItemGroup>
+
 </Project>
