@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Controller" />
       <Folder Include="Data" />
     </ItemGroup>
 
@@ -21,6 +20,7 @@
       <ProjectReference Include="..\WebApp.Business\WebApp.Business.csproj" />
       <ProjectReference Include="..\WebApp.Data\WebApp.Data.csproj" />
       <ProjectReference Include="..\WebApp.Model\WebApp.Model.csproj" />
+      <ProjectReference Include="..\WebApp\WebApp.csproj" />
     </ItemGroup>
 
 </Project>
