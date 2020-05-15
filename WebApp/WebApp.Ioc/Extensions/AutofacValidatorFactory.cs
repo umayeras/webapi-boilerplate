@@ -8,7 +8,7 @@ namespace WebApp.Ioc.Extensions
     {
         #region ctor
 
-        readonly IComponentContext context;
+        private readonly IComponentContext context;
 
         public AutofacValidatorFactory(IComponentContext context)
         {

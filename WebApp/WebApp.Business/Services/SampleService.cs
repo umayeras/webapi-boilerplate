@@ -26,8 +26,8 @@ namespace WebApp.Business.Services
 
         public ServiceResult Add(AddSampleRequest request)
         {
-            var contact = sampleFactory.CreateAddSample(request);
-            var isSuccess = sampleRepository.Add(contact);
+            var sample = sampleFactory.CreateAddSample(request);
+            var isSuccess = sampleRepository.Add(sample);
             
             return !isSuccess 
                 ? ServiceResult.Error() 
