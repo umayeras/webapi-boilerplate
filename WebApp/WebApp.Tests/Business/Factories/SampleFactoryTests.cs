@@ -1,4 +1,6 @@
+using System;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using WebApp.Business.Factories;
 using WebApp.Model;
@@ -25,13 +27,19 @@ namespace WebApp.Tests.Business.Factories
         public void CreateAddSample_NoCondition_ReturnSample()
         {
             // Arrange
-            var request = new AddSampleRequest();
+            var request = new AddSampleRequest
+            {
+                Title = "Sample Title"
+            };
             
             // Act
             var result = factory.CreateAddSample(request);
 
             // Assert
             result.Title.Should().Be(request.Title);
+            result.CreatedDate.Should().BeCloseTo(DateTime.Now, 100, "dates should differ at milliseconds level");
+            result.ModifiedDate.Should().BeCloseTo(DateTime.Now, 100, "dates should differ at milliseconds level");
+            result.Status.Should().Be(0);
         }
     }
 }
