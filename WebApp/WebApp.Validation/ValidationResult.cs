@@ -1,4 +1,4 @@
-﻿namespace WebApp.Validation.Abstract
+﻿namespace WebApp.Validation
 {
     public class ValidationResult
     {

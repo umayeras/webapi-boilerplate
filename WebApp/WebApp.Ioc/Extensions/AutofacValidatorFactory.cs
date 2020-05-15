@@ -1,4 +1,4 @@
-﻿﻿using Autofac;
+﻿using Autofac;
 using FluentValidation;
 using System;
 

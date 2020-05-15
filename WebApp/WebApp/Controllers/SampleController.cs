@@ -1,14 +1,43 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using WebApp.Business.Abstract;
+using WebApp.Model;
+using WebApp.Validation.Abstract;
 
 namespace WebApp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SampleController : ControllerBase
+    public class SampleController : BaseController
     {
-        public IActionResult Get()
+        private readonly ISampleService sampleService;
+
+        public SampleController(
+            IRequestValidator requestValidator,
+            ISampleService sampleService) : base(requestValidator)
         {
-            return Ok("Ok");
+            this.sampleService = sampleService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var sampleList = await sampleService.Get();
+            return Ok(sampleList);
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] AddSampleRequest request)
+        {
+            var validationResult = RequestValidator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest("InvalidRequest");
+            }
+
+            var result = sampleService.Add(request);
+
+            return Ok(result);
         }
     }
 }

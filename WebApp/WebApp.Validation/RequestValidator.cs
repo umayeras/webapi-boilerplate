@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentValidation.Results;
 using WebApp.Validation.Abstract;
-using ValidationResult = WebApp.Validation.Abstract.ValidationResult;
 
 namespace WebApp.Validation
 {
@@ -27,24 +26,15 @@ namespace WebApp.Validation
                 return ValidationResult.Error("InvalidRequest");
             }
 
-            var result = ValidateCore(request);
-
-            if (result.IsValid)
-            {
-                return ValidationResult.Success;
-            }
-
-            return ValidationError(result.Errors);
-        }
-
-        FluentValidation.Results.ValidationResult ValidateCore<T>(T model) where T : class
-        {
             var validator = validatorFactory.GetValidator<T>();
+            var result = validator.Validate(request);
 
-            return validator.Validate(model);
+            return result.IsValid 
+                ? ValidationResult.Success 
+                : ValidationError(result.Errors);
         }
 
-        static ValidationResult ValidationError(IEnumerable<ValidationFailure> errors)
+        private static ValidationResult ValidationError(IEnumerable<ValidationFailure> errors)
         {
             var errorArray = errors.Select(error => error.ErrorMessage).ToArray();
             var errorMessage = string.Join("\n", errorArray);
