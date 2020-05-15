@@ -5,7 +5,7 @@ namespace WebApp.Data.Contexts
 {
     namespace WebApp.Data.Contexts
     {
-        public class WebAppContext : DbContext
+        public class WebAppDbContext : DbContext
         {
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {

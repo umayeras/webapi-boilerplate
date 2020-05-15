@@ -5,7 +5,7 @@ using WebApp.Model;
 
 namespace WebApp.Data.Repositories
 {
-    public class SampleRepository : BaseRepository<Sample, WebAppContext>, ISampleRepository
+    public class SampleRepository : BaseRepository<Sample, WebAppDbContext>, ISampleRepository
     {
         public SampleRepository(ILoggingService logger) : base(logger)
         {
