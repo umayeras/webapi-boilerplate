@@ -25,7 +25,7 @@ namespace WebApp.Controllers
             var sampleList = await sampleService.Get();
             return Ok(sampleList);
         }
-
+        
         [HttpPost]
         public IActionResult Post([FromBody] AddSampleRequest request)
         {
@@ -36,6 +36,20 @@ namespace WebApp.Controllers
             }
 
             var result = sampleService.Add(request);
+
+            return Ok(result);
+        }
+        
+        [HttpPut]
+        public IActionResult Put([FromBody] UpdateSampleRequest request)
+        {
+            var validationResult = RequestValidator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest("InvalidRequest");
+            }
+
+            var result = sampleService.Update(request);
 
             return Ok(result);
         }
