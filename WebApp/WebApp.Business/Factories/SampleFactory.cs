@@ -21,6 +21,7 @@ namespace WebApp.Business.Factories
         {
             return new Sample
             {
+                Id = request.Id,
                 Title = request.Title,
                 Status = request.Status,
                 CreatedDate = createdDate,
