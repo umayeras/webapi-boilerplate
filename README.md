@@ -21,10 +21,10 @@ This API boilerplate includes the folllowing:
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Installing
-Pull the repo, open it in Visual Studio, Rider or VS Code.
-Restore NuGet packages.
-Change connection string on WebAppDbContext/OnConfiguring
-Create a table as named Sample on your database.
+- Pull the repo, open it in Visual Studio, Rider or VS Code.
+- Restore NuGet packages.
+- Change connection string on WebAppDbContext/OnConfiguring
+- Create a table as named Sample on your database.
 
 ## License
 
