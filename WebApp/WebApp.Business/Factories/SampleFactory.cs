@@ -16,5 +16,16 @@ namespace WebApp.Business.Factories
                 Status = 0
             };
         }
+
+        public Sample CreateUpdateSample(UpdateSampleRequest request, DateTime createdDate)
+        {
+            return new Sample
+            {
+                Title = request.Title,
+                Status = request.Status,
+                CreatedDate = createdDate,
+                ModifiedDate = DateTime.Now,
+            };
+        }
     }
 }

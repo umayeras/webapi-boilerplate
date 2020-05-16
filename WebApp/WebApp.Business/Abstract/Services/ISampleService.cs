@@ -9,5 +9,7 @@ namespace WebApp.Business.Abstract
         Task<IEnumerable<Sample>> Get();
         
         ServiceResult Add(AddSampleRequest request);
+
+        ServiceResult Update(UpdateSampleRequest request);
     }
 }

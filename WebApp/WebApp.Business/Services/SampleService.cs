@@ -6,19 +6,19 @@ using WebApp.Model;
 
 namespace WebApp.Business.Services
 {
-    public class SampleService :ISampleService
+    public class SampleService : ISampleService
     {
         private readonly ISampleRepository sampleRepository;
         private readonly ISampleFactory sampleFactory;
-        
+
         public SampleService(
-            ISampleRepository sampleRepository, 
+            ISampleRepository sampleRepository,
             ISampleFactory sampleFactory)
         {
             this.sampleRepository = sampleRepository;
             this.sampleFactory = sampleFactory;
         }
-        
+
         public async Task<IEnumerable<Sample>> Get()
         {
             return await sampleRepository.GetListAsync();
@@ -28,9 +28,20 @@ namespace WebApp.Business.Services
         {
             var sample = sampleFactory.CreateAddSample(request);
             var isSuccess = sampleRepository.Add(sample);
-            
-            return !isSuccess 
-                ? ServiceResult.Error() 
+
+            return !isSuccess
+                ? ServiceResult.Error()
+                : ServiceResult.Success();
+        }
+
+        public ServiceResult Update(UpdateSampleRequest request)
+        {
+            var currentSample = sampleRepository.Get(x => x.Id == request.Id);
+            var sample = sampleFactory.CreateUpdateSample(request, currentSample.CreatedDate);
+            var isSuccess = sampleRepository.Update(sample);
+
+            return !isSuccess
+                ? ServiceResult.Error()
                 : ServiceResult.Success();
         }
     }

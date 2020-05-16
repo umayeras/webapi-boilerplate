@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.IsSuccess.Should().BeFalse();
         }
-        
+
         [Test]
         public void AddSample_AddingSucceeds_ReturnSuccessResult()
         {
@@ -79,6 +80,52 @@ namespace WebApp.Tests.Business.Services
 
             // Act
             var result = service.Add(request);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+        }
+
+        [Test]
+        public void UpdateSample_UpdatingFails_ReturnErrorResult()
+        {
+            // Arrange
+            var request = new UpdateSampleRequest {Id = 1};
+            var sample = new Sample
+            {
+                Id = 1,
+                CreatedDate = It.IsAny<DateTime>()
+            };
+            const bool updateResult = false;
+
+            sampleRepository.Setup(x => x.Get(s => s.Id == request.Id)).Returns(sample);
+            sampleFactory.Setup(x => x.CreateUpdateSample(request, sample.CreatedDate)).Returns(sample);
+            sampleRepository.Setup(x => x.Update(sample)).Returns(updateResult);
+
+            // Act
+            var result = service.Update(request);
+
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+        }
+
+        [Test]
+        public void UpdateSample_UpdatingSucceeds_ReturnSuccessResult()
+        {
+            // Arrange
+            var request = new UpdateSampleRequest {Id = 1};
+            var sample = new Sample
+            {
+                Id = 1,
+                CreatedDate = It.IsAny<DateTime>()
+            };
+            const bool updateResult = true;
+
+            sampleRepository.Setup(x => x.Get(s => s.Id == request.Id)).Returns(sample);
+            sampleFactory.Setup(x => x.CreateUpdateSample(request, sample.CreatedDate)).Returns(sample);
+            sampleRepository.Setup(x => x.Update(sample)).Returns(updateResult);
+
+            // Act
+            var result = service.Update(request);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
