@@ -104,5 +104,60 @@ namespace WebApp.Tests.Controller
             // Assert
             result.Should().BeEquivalentTo(apiResult);
         }
+        
+        [Test]
+        public void Put_InvalidRequest_ReturnBadRequest()
+        {
+            // Arrange
+            var request = new UpdateSampleRequest();
+            var validationResult = ValidationResult.Error("invalid request");
+            var apiResult = new BadRequestObjectResult("InvalidRequest");
+            
+            requestValidator.Setup(x => x.Validate(request)).Returns(validationResult);
+            
+            // Act
+            var result = controller.Put(request);
+
+            // Assert
+            result.Should().BeEquivalentTo(apiResult);
+        }
+        
+        [Test]
+        public void Put_AddingFails_ReturnErrorResult()
+        {
+            // Arrange
+            var request = new UpdateSampleRequest();
+            var validationResult = ValidationResult.Success;
+            var serviceResult = ServiceResult.Error();
+            var apiResult = new OkObjectResult(serviceResult);
+            
+            requestValidator.Setup(x => x.Validate(request)).Returns(validationResult);
+            sampleService.Setup(x => x.Update(request)).Returns(serviceResult);
+            
+            // Act
+            var result = controller.Put(request);
+
+            // Assert
+            result.Should().BeEquivalentTo(apiResult);
+        }
+        
+        [Test]
+        public void Put_AddingSucceeds_ReturnSuccessResult()
+        {
+            // Arrange
+            var request = new UpdateSampleRequest();
+            var validationResult = ValidationResult.Success;
+            var serviceResult = ServiceResult.Success();
+            var apiResult = new OkObjectResult(serviceResult);
+            
+            requestValidator.Setup(x => x.Validate(request)).Returns(validationResult);
+            sampleService.Setup(x => x.Update(request)).Returns(serviceResult);
+            
+            // Act
+            var result = controller.Put(request);
+
+            // Assert
+            result.Should().BeEquivalentTo(apiResult);
+        }
     }
 }
