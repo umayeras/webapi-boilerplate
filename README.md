@@ -25,6 +25,7 @@ These instructions will get you a copy of the project up and running on your loc
 - Restore NuGet packages.
 - Change connection string on WebAppDbContext/OnConfiguring
 - Create a table as named Sample on your database.
+- Modify nlog.config file. (where to store log files, rules etc.)
 
 ## License
 
