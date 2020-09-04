@@ -3,3 +3,4 @@
 bin/
 obj/
 WebApp/WebApp.sln.DotSettings.user
+.vscode/
