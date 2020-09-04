@@ -2,5 +2,10 @@
 .idea/
 bin/
 obj/
-WebApp/WebApp.sln.DotSettings.user
 .vscode/
+.vs/
+*.DotSettings.user
+*.ncrunchsolution*
+*.suo
+*.csproj.user
+*testlog*

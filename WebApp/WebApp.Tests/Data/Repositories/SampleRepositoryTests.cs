@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -38,15 +39,16 @@ namespace WebApp.Tests.Data.Repositories
         #region get
 
         [Test]
-        public void GetListAsync_NoCondition_ReturnList()
+        public async Task GetListAsync_NoFilter_ReturnList()
         {
             // Arrange
+            const Expression<Func<Sample, bool>> filter = null;
 
             // Act
-            var result = repository.GetListAsync();
+            var result = await repository.GetListAsync(filter);
 
             // Assert
-            result.Result.Should().BeOfType<List<Sample>>();
+            result.Should().BeOfType<List<Sample>>();
         }
 
         [Test]
@@ -65,7 +67,7 @@ namespace WebApp.Tests.Data.Repositories
         public void GetAsync_NoCondition_ReturnItem()
         {
             // Arrange
-            var sample = new Sample {Id = 1};
+            var sample = new Sample { Id = 1 };
             Expression<Func<Sample, bool>> filter = n => true;
             baseRepository.Setup(x => x.Get(filter)).Returns(sample);
 
@@ -81,7 +83,7 @@ namespace WebApp.Tests.Data.Repositories
         public void Get_NoCondition_ReturnItem()
         {
             // Arrange
-            var sample = new Sample {Id = 1};
+            var sample = new Sample { Id = 1 };
             Expression<Func<Sample, bool>> filter = n => true;
             baseRepository.Setup(x => x.Get(filter)).Returns(sample);
 
@@ -101,17 +103,17 @@ namespace WebApp.Tests.Data.Repositories
         public void Add_AddingFails_ReturnFalse()
         {
             // Arrange
-           
+
             // Act
 
             // Assert
         }
-        
+
         [Test]
         public void Add_AddingSucceeds_ReturnTrue()
         {
             // Arrange
-           
+
             // Act
 
             // Assert
@@ -125,17 +127,17 @@ namespace WebApp.Tests.Data.Repositories
         public void Update_UpdatingFails_ReturnFalse()
         {
             // Arrange
-           
+
             // Act
 
             // Assert
         }
-        
+
         [Test]
         public void Update_UpdatingSucceeds_ReturnTrue()
         {
             // Arrange
-           
+
             // Act
 
             // Assert
@@ -149,17 +151,17 @@ namespace WebApp.Tests.Data.Repositories
         public void Delete_DeletingFails_ReturnFalse()
         {
             // Arrange
-           
+
             // Act
 
             // Assert
         }
-        
+
         [Test]
         public void Delete_DeletingSucceeds_ReturnTrue()
         {
             // Arrange
-           
+
             // Act
 
             // Assert

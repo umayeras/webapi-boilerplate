@@ -10,15 +10,16 @@ namespace WebApp
 {
     public class Startup
     {
+        private IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        private IConfiguration Configuration { get; }
-
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddHealthChecks();
             services.AddControllers();
 
             ConfigureSwagger(services);
@@ -48,7 +49,7 @@ namespace WebApp
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -57,7 +58,7 @@ namespace WebApp
 
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web API Boilerplate V1"); });
-
+            app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
