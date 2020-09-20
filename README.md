@@ -7,7 +7,7 @@ Asp.Net Core 3.1 WebApi Starter Kit with Entity Framework Core, Autofac, NLog, F
 
 This API boilerplate includes the folllowing:
 
-- Generic Repository Pattern
+- Generic Repository Pattern with Unit of Work
 - Entity Framework Core
 - NLog
 - Fluent Validation
