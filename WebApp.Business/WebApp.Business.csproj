@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="Abstract\.DS_Store" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WebApp.Data\WebApp.Data.csproj" />
+      <ProjectReference Include="..\WebApp.Model\WebApp.Model.csproj" />
+    </ItemGroup>
+
+</Project>
