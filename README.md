@@ -9,7 +9,6 @@ This API boilerplate includes the folllowing:
 
 - Generic Repository Pattern
 - Entity Framework Core
-- Autofac
 - NLog
 - Fluent Validation
 - NUnit
@@ -23,8 +22,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Installing
 - Pull the repo, open it in Visual Studio, Rider or VS Code.
 - Restore NuGet packages.
-- Change connection string on WebAppDbContext/OnConfiguring
-- Create a table as named Sample on your database.
+- Change connection string on WebApp/appsettings.json
 - Modify nlog.config file. (where to store log files, rules etc.)
 
 ## License
