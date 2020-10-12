@@ -28,13 +28,15 @@ namespace WebApp.Data.Repositories
 
         #endregion
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null)
+        public async Task<IQueryable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null)
         {
-            return filter == null
+            var list = filter == null
                 ? await dbSet.AsNoTracking().ToListAsync()
                 : await dbSet.Where(filter).AsNoTracking().ToListAsync();
-        }
 
+            return list.AsQueryable();
+        }
+        
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
             return await dbSet.SingleOrDefaultAsync(filter);
