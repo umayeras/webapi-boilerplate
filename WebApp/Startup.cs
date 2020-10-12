@@ -20,6 +20,7 @@ namespace WebApp
         {
             services.AddDatabaseContext(Configuration);
             services.AddDependencyResolvers();
+            services.AddRedisCache(Configuration);
             services.AddFluentValidation();
             services.AddHealthChecks();
             services.AddControllers();

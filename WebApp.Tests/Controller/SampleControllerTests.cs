@@ -6,7 +6,7 @@ using Moq;
 using NUnit.Framework;
 using WebApp.Business.Abstract.Services;
 using WebApp.Controllers;
-using WebApp.Core.Resources;
+using WebApp.Core.Constants;
 using WebApp.Model.Entities;
 using WebApp.Model.Requests;
 using WebApp.Model.Results;

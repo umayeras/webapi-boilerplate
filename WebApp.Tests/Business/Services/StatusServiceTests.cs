@@ -8,7 +8,6 @@ using Moq;
 using NUnit.Framework;
 using WebApp.Business.Abstract.Factories;
 using WebApp.Business.Services;
-using WebApp.Core.Resources;
 using WebApp.Data.Repositories;
 using WebApp.Data.Uow;
 using WebApp.Model.Entities;
@@ -45,12 +44,12 @@ namespace WebApp.Tests.Business.Services
         #endregion
 
         [Test]
-        public async Task GetAll_NoCondition_ReturnList()
+        public async Task GetAll_ItemsNotInCacheAlready_ReturnList()
         {
             // Arrange
             var item1 = new Status {Id = 1, Name = "Active"};
             var item2 = new Status {Id = 2, Name = "Passive"};
-            var list = new List<Status> {item1, item2}.AsEnumerable();
+            var list = new List<Status> {item1, item2}.AsQueryable();
 
             repository.Setup(x => x.GetAllAsync(null)).ReturnsAsync(list);
 

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebApp.Business.Abstract.Factories;
 using WebApp.Business.Abstract.Services;
+using WebApp.Core.Caching;
+using WebApp.Core.Constants;
 using WebApp.Core.Extensions;
-using WebApp.Core.Resources;
 using WebApp.Data.Repositories;
 using WebApp.Data.Uow;
 using WebApp.Model.Entities;
@@ -20,13 +22,16 @@ namespace WebApp.Business.Services
 
         private readonly ISampleFactory sampleFactory;
         private readonly IBaseRepository<Sample> repository;
+        private readonly ICachingService cachingService;
 
         public SampleService(
             IUnitOfWork unitOfWork,
             ILogger<SampleService> logger,
-            ISampleFactory sampleFactory) : base(unitOfWork, logger)
+            ISampleFactory sampleFactory,
+            ICachingService cachingService) : base(unitOfWork, logger)
         {
             this.sampleFactory = sampleFactory;
+            this.cachingService = cachingService;
 
             repository = UnitOfWork.GetRepository<Sample>();
         }
@@ -35,7 +40,16 @@ namespace WebApp.Business.Services
 
         public async Task<IEnumerable<Sample>> GetAll()
         {
-            return await repository.GetAllAsync();
+            if (cachingService.Exists(CacheKey.Samples))
+            {
+                return cachingService.Get<IEnumerable<Sample>>(CacheKey.Samples);
+            }
+
+            var list = await repository.GetAllAsync(x => x.StatusId != StatusType.Deleted.ToInt32());
+
+            AddItemsToCache(list);
+
+            return list;
         }
 
         public async Task<ServiceResult> Add(AddSampleRequest request)
@@ -46,6 +60,9 @@ namespace WebApp.Business.Services
             {
                 await repository.AddAsync(sample);
                 UnitOfWork.Save();
+
+                AddSampleToCache(sample);
+                await RefreshCachedSampleList();
 
                 return ServiceResult.Success(Messages.AddingSuccess);
             }
@@ -66,6 +83,9 @@ namespace WebApp.Business.Services
                 repository.Update(sample);
                 UnitOfWork.Save();
 
+                RefreshCachedSampleToCache(sample);
+                await RefreshCachedSampleList();
+
                 return ServiceResult.Success(Messages.UpdatingSuccess);
             }
             catch (Exception ex)
@@ -81,9 +101,11 @@ namespace WebApp.Business.Services
             {
                 var sample = await repository.GetAsync(x => x.Id == id);
                 sample.StatusId = StatusType.Deleted.ToInt32();
-                
+
                 repository.Delete(sample);
                 UnitOfWork.Save();
+
+                await RefreshCachedSampleList();
 
                 return ServiceResult.Success(Messages.DeletingSuccess);
             }
@@ -93,5 +115,38 @@ namespace WebApp.Business.Services
                 return ServiceResult.Error(Messages.DeletingFailed);
             }
         }
+
+        #region caching helpers
+
+        private void AddItemsToCache(IQueryable<Sample> samples)
+        {
+            cachingService.Set(CacheKey.Samples, samples.ToList());
+
+            foreach (var item in samples)
+            {
+                if (!cachingService.Exists($"{CacheKey.Sample}-{item.Id}"))
+                {
+                    AddSampleToCache(item);
+                }
+            }
+        }
+
+        private void AddSampleToCache(Sample sample)
+        {
+            cachingService.Set($"{CacheKey.Sample}-{sample.Id}", sample);
+        }
+
+        private void RefreshCachedSampleToCache(Sample sample)
+        {
+            cachingService.Refresh(CacheKey.Sample, sample);
+        }
+
+        private async Task RefreshCachedSampleList()
+        {
+            var list = await repository.GetAllAsync(x => x.StatusId != StatusType.Deleted.ToInt32());
+            cachingService.Refresh(CacheKey.Samples, list);
+        }
+
+        #endregion
     }
 }

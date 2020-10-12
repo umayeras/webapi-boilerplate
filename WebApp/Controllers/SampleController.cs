@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Business.Abstract.Services;
-using WebApp.Core.Resources;
+using WebApp.Core.Constants;
 using WebApp.Model.Requests;
 using WebApp.Validation.Abstract;
 

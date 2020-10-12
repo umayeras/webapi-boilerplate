@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using WebApp.Business.Abstract.Factories;
 using WebApp.Business.Services;
-using WebApp.Core.Resources;
+using WebApp.Core.Caching;
+using WebApp.Core.Constants;
 using WebApp.Data.Repositories;
 using WebApp.Data.Uow;
 using WebApp.Model.Entities;
@@ -31,6 +33,7 @@ namespace WebApp.Tests.Business.Services
         private Mock<IUnitOfWork> unitOfWork;
         private Mock<IBaseRepository<Sample>> repository;
         private Mock<ISampleFactory> sampleFactory;
+        private Mock<ICachingService> cachingService;
 
         [SetUp]
         public void Init()
@@ -39,20 +42,43 @@ namespace WebApp.Tests.Business.Services
             unitOfWork = new Mock<IUnitOfWork>();
             repository = new Mock<IBaseRepository<Sample>>();
             sampleFactory = new Mock<ISampleFactory>();
+            cachingService = new Mock<ICachingService>();
             unitOfWork.Setup(x => x.GetRepository<Sample>()).Returns(repository.Object);
-            
-            service = new SampleService(unitOfWork.Object, logger.Object, sampleFactory.Object);
+
+            service = new SampleService(unitOfWork.Object, logger.Object, sampleFactory.Object, cachingService.Object);
         }
 
         #endregion
 
         [Test]
-        public async Task GetAll_NoCondition_ReturnList()
+        public async Task GetAll_ItemsNotInCacheAlready_ReturnListFromDatabase()
+        {
+            // Arrange
+            var sample = new Sample {Id = 1, StatusId = StatusType.Active.ToInt32()};
+            var list = new List<Sample> {sample}.AsQueryable();
+            const bool cacheKeyExists = false;
+
+            cachingService.Setup(x => x.Exists(CacheKey.Samples)).Returns(cacheKeyExists);
+            repository.Setup(x => x.GetAllAsync(s => s.StatusId != StatusType.Deleted.ToInt32())).ReturnsAsync(list);
+
+            // Act
+            var result = await service.GetAll();
+
+            // Assert
+            result.Should().BeEquivalentTo(list);
+            cachingService.Verify(x => x.Set(CacheKey.Samples, list), Times.Once);
+            cachingService.Verify(x => x.Set($"{CacheKey.Sample}-{sample.Id}", sample), Times.AtLeastOnce);
+        }
+
+        [Test]
+        public async Task GetAll_ItemsCachedBefore_ReturnListFromCache()
         {
             // Arrange
             var list = new List<Sample> {new Sample {Id = 1}}.AsQueryable();
-            
-            repository.Setup(x => x.GetAllAsync(null)).ReturnsAsync(list);
+            const bool cacheKeyExists = true;
+
+            cachingService.Setup(x => x.Exists(CacheKey.Samples)).Returns(cacheKeyExists);
+            cachingService.Setup(x => x.Get<IEnumerable<Sample>>(CacheKey.Samples)).Returns(list);
 
             // Act
             var result = await service.GetAll();
@@ -60,7 +86,7 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.Should().BeEquivalentTo(list);
         }
-        
+
         [Test]
         public async Task Add_AddingFailed_AddLogAndReturnServiceErrorResult()
         {
@@ -79,10 +105,10 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.IsSuccess.Should().BeFalse();
             result.Message.Should().Be(serviceResult.Message);
-            unitOfWork.Verify(x=>x.Save(), Times.Never);
+            unitOfWork.Verify(x => x.Save(), Times.Never);
             AssertHelpers.VerifyLogger(logger, LogLevel.Error, Times.Once());
         }
-        
+
         [Test]
         public async Task Add_AddingSuccess_AddToDbAndReturnServiceSuccessResult()
         {
@@ -91,7 +117,7 @@ namespace WebApp.Tests.Business.Services
             var model = new Sample();
             const bool isAdded = true;
             var serviceResult = ServiceResult.Success(Messages.AddingSuccess);
-            
+
             sampleFactory.Setup(x => x.CreateAddSample(request)).Returns(model);
             repository.Setup(x => x.AddAsync(model)).ReturnsAsync(isAdded);
 
@@ -101,15 +127,16 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Message.Should().Be(serviceResult.Message);
-            unitOfWork.Verify(x=>x.Save(), Times.Once);
+            unitOfWork.Verify(x => x.Save(), Times.Once);
+            cachingService.Verify(x => x.Set($"{CacheKey.Sample}-{model.Id}", model), Times.Once);
         }
-        
+
         [Test]
         public async Task Update_UpdatingFailed_AddLogAndReturnServiceErrorResult()
         {
             // Arrange
-            var request = new UpdateSampleRequest{Id = 1};
-            var model = new Sample{Id = 1, CreatedDate = It.IsAny<DateTime>()};
+            var request = new UpdateSampleRequest {Id = 1};
+            var model = new Sample {Id = 1, CreatedDate = It.IsAny<DateTime>()};
             var exception = It.IsAny<Exception>();
             var serviceResult = ServiceResult.Error(Messages.UpdatingFailed);
 
@@ -123,16 +150,16 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.IsSuccess.Should().BeFalse();
             result.Message.Should().Be(serviceResult.Message);
-            unitOfWork.Verify(x=>x.Save(), Times.Never);
+            unitOfWork.Verify(x => x.Save(), Times.Never);
             AssertHelpers.VerifyLogger(logger, LogLevel.Error, Times.Once());
         }
-        
+
         [Test]
         public async Task Update_UpdatingSuccess_UpdateEntityAndReturnServiceSuccessResult()
         {
             // Arrange
-            var request = new UpdateSampleRequest{Id = 1};
-            var model = new Sample{Id = 1, CreatedDate = It.IsAny<DateTime>()};
+            var request = new UpdateSampleRequest {Id = 1};
+            var model = new Sample {Id = 1, CreatedDate = It.IsAny<DateTime>()};
             const bool isUpdated = true;
             var serviceResult = ServiceResult.Error(Messages.UpdatingSuccess);
 
@@ -146,15 +173,15 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Message.Should().Be(serviceResult.Message);
-            unitOfWork.Verify(x=>x.Save(), Times.Once);
+            unitOfWork.Verify(x => x.Save(), Times.Once);
         }
-        
+
         [Test]
         public async Task Delete_DeletingFailed_AddLogAndReturnServiceErrorResult()
         {
             // Arrange
             const int id = 1;
-            var model = new Sample{Id = id};
+            var model = new Sample {Id = id};
             var exception = It.IsAny<Exception>();
             var serviceResult = ServiceResult.Error(Messages.DeletingFailed);
 
@@ -167,10 +194,10 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.IsSuccess.Should().BeFalse();
             result.Message.Should().Be(serviceResult.Message);
-            unitOfWork.Verify(x=>x.Save(), Times.Never);
+            unitOfWork.Verify(x => x.Save(), Times.Never);
             AssertHelpers.VerifyLogger(logger, LogLevel.Error, Times.Once());
         }
-        
+
         [Test]
         public async Task Delete_DeletingSuccess_UpdateEntityStatusForDeletedAndReturnServiceSuccessResult()
         {
@@ -179,7 +206,7 @@ namespace WebApp.Tests.Business.Services
             var model = new Sample {Id = 1, StatusId = StatusType.Deleted.ToInt32()};
             const bool isDeleted = true;
             var serviceResult = ServiceResult.Success(Messages.DeletingSuccess);
-            
+
             repository.Setup(x => x.GetAsync(s => s.Id == id)).ReturnsAsync(model);
             repository.Setup(x => x.Delete(model)).Returns(isDeleted);
 
@@ -189,7 +216,7 @@ namespace WebApp.Tests.Business.Services
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.Message.Should().Be(serviceResult.Message);
-            unitOfWork.Verify(x=>x.Save(), Times.Once);
+            unitOfWork.Verify(x => x.Save(), Times.Once);
         }
     }
 }

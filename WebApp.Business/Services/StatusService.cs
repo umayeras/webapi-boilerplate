@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using WebApp.Business.Abstract.Factories;
 using WebApp.Business.Abstract.Services;
 using WebApp.Core.Extensions;
-using WebApp.Core.Resources;
 using WebApp.Data.Repositories;
 using WebApp.Data.Uow;
 using WebApp.Model.Entities;

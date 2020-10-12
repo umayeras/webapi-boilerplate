@@ -1,4 +1,4 @@
-namespace WebApp.Core.Resources
+namespace WebApp.Core.Constants
 {
     public static class PropertyNames
     {
