@@ -1,6 +1,6 @@
 # Asp.Net Core WebApi Boilerplate
 
-Asp.Net Core 3.1 WebApi Starter Kit with Entity Framework Core, NLog, Fluent Validation, NUnit, Moq, Fluent Assertions, Docker
+Asp.Net Core 3.1 WebApi Starter Kit with Entity Framework Core, NLog, Fluent Validation, NUnit, Moq, Fluent Assertions, Docker, Redis
 
 
 ## Scope
@@ -15,6 +15,7 @@ This API boilerplate includes the folllowing:
 - Moq
 - Fluent Assertions
 - Docker
+- Redis
 
 ## Getting Started
 
