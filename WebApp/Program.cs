@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
+using WebApp.Core.Resources;
 
 namespace WebApp
 {
@@ -13,12 +14,11 @@ namespace WebApp
             var logger = NLogBuilder.ConfigureNLog("Config/nlog.config").GetCurrentClassLogger();
             try
             {
-                logger.Debug("init main");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception exception)
             {
-                logger.Error(exception, "Stopped program because of exception");
+                logger.Error(exception, Messages.GeneralError);
             }
             finally
             {
