@@ -4,8 +4,6 @@ using WebApp.Business.Abstract.Services;
 
 namespace WebApp.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
     public class StatusController : ControllerBase
     {
         private readonly IStatusService statusService;

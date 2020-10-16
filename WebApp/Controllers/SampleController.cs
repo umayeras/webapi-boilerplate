@@ -7,8 +7,6 @@ using WebApp.Validation.Abstract;
 
 namespace WebApp.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
     public class SampleController : BaseController
     {
         private readonly ISampleService sampleService;
@@ -56,6 +54,7 @@ namespace WebApp.Controllers
         }
         
         [HttpDelete]
+        [MapToApiVersion("2")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
