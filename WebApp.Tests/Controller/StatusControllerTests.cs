@@ -7,10 +7,6 @@ using NUnit.Framework;
 using WebApp.Business.Abstract.Services;
 using WebApp.Controllers;
 using WebApp.Model.Entities;
-using WebApp.Model.Requests;
-using WebApp.Model.Results;
-using WebApp.Validation;
-using WebApp.Validation.Abstract;
 
 namespace WebApp.Tests.Controller
 {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,15 +5,10 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using WebApp.Business.Abstract.Factories;
 using WebApp.Business.Services;
 using WebApp.Data.Repositories;
 using WebApp.Data.Uow;
 using WebApp.Model.Entities;
-using WebApp.Model.Requests;
-using WebApp.Model.Results;
-using WebApp.Tests.Helpers;
-using WebApp.Core.Extensions;
 
 namespace WebApp.Tests.Business.Services
 {

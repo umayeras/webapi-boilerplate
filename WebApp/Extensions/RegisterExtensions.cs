@@ -1,6 +1,8 @@
 ﻿using System;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +77,17 @@ namespace WebApp.Extensions
                         Url = new Uri("https://github.com/umayeras/webapi-boilerplate/blob/master/LICENSE"),
                     }
                 });
+            });
+        }
+
+        internal static void AddVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(config =>
+            {
+                config.DefaultApiVersion = new ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true;
+                config.ReportApiVersions = true;
+                config.ApiVersionReader = new HeaderApiVersionReader("X-version");
             });
         }
 

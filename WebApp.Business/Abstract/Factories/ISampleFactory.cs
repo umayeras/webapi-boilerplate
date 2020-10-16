@@ -1,4 +1,3 @@
-using System;
 using WebApp.Model.Entities;
 using WebApp.Model.Requests;
 
