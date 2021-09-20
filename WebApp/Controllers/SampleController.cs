@@ -24,7 +24,7 @@ namespace WebApp.Controllers
             var sampleList = await sampleService.GetAll();
             return Ok(sampleList);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] AddSampleRequest request)
         {
@@ -38,7 +38,7 @@ namespace WebApp.Controllers
 
             return Ok(result);
         }
-        
+
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] UpdateSampleRequest request)
         {
@@ -52,7 +52,7 @@ namespace WebApp.Controllers
 
             return Ok(result);
         }
-        
+
         [HttpDelete]
         [MapToApiVersion("2")]
         public async Task<IActionResult> Delete(int id)
@@ -61,9 +61,9 @@ namespace WebApp.Controllers
             {
                 return BadRequest(Messages.InvalidRequest);
             }
-            
+
             var result = await sampleService.Delete(id);
-            
+
             return Ok(result);
         }
     }
